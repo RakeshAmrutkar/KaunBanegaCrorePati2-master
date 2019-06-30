@@ -7,7 +7,7 @@ public  final class Quizcontract {
     {    }
     public static  class Questiontable implements BaseColumns {
         public static final String TABLE_NAME =" quiz_questions";
-        public static final String Question =" question";
+        public static final String Question_Col =" question";
         public static final String OPTION_1 =" op1";
         public static final String OPTION_2 =" op2";
         public static final String OPTION_3 =" op3";
