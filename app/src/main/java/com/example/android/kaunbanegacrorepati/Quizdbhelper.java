@@ -21,17 +21,25 @@ public class Quizdbhelper<Private> extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         this.db = db;
-        db = this.getWritableDatabase();
-        final String Query = " create table "+ Questiontable.TABLE_NAME +"(" + Questiontable._ID +"INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                 Questiontable.Question_Col + " TEXT, " + Questiontable.OPTION_1 +" TEXT, " + Questiontable.OPTION_2 +" TEXT, "+
-                  Questiontable.OPTION_3 +" TEXT, " + Questiontable.OPTION_4 +" TEXT, "+ Questiontable.CORRECT +" INTEGER " +")";
-       db.execSQL(Query);
+        //db = this.getWritableDatabase();
+        final String SQL_CREATE_QUESTIONS_TABLE = "CREATE TABLE " +
+                Questiontable.TABLE_NAME + " ( " +
+                Questiontable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                Questiontable.OPTION_1 + " TEXT, " +
+                Questiontable.OPTION_2 + " TEXT, " +
+                Questiontable.OPTION_3 + " TEXT, " +
+                Questiontable.OPTION_4 + " TEXT, " +
+                Questiontable.CORRECT + " INTEGER" +
+                ")";
+
+        db.execSQL(SQL_CREATE_QUESTIONS_TABLE);
+        fillQuestiontable();
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
       db.execSQL("DROP TABLE IF EXISTS"+ Questiontable.TABLE_NAME);
       onCreate(db);
-      fillQuestiontable();
+
     }
 
     private void fillQuestiontable()
@@ -50,7 +58,7 @@ public class Quizdbhelper<Private> extends SQLiteOpenHelper {
         contentValues.put(Questiontable.CORRECT , question.getCorrect());
         db.insert(Questiontable.TABLE_NAME,null,contentValues);
     }
-    private List<Question>  getDatabaseQuestions(){
+    public List<Question>  getDatabaseQuestions(){
         List<Question> questions= new ArrayList<>();
         db=getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + Questiontable.TABLE_NAME, null );
