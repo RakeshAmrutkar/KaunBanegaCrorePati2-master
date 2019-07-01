@@ -15,7 +15,7 @@ public class Quizdbhelper<Private> extends SQLiteOpenHelper {
     private static final  String  DATABASE_NAME ="KBC.db";
     private  SQLiteDatabase db;
     public Quizdbhelper( Context context) {
-        super(context, DATABASE_NAME, null ,1 );
+        super(context, DATABASE_NAME, null ,2 );
     }
 
     @Override
@@ -25,6 +25,7 @@ public class Quizdbhelper<Private> extends SQLiteOpenHelper {
         final String SQL_CREATE_QUESTIONS_TABLE = "CREATE TABLE " +
                 Questiontable.TABLE_NAME + " ( " +
                 Questiontable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                Questiontable.Question_Col + " TEXT, " +
                 Questiontable.OPTION_1 + " TEXT, " +
                 Questiontable.OPTION_2 + " TEXT, " +
                 Questiontable.OPTION_3 + " TEXT, " +
@@ -44,8 +45,14 @@ public class Quizdbhelper<Private> extends SQLiteOpenHelper {
 
     private void fillQuestiontable()
     {
-      Question question1 = new Question( "WHAT IS SQL ?"  , "  language", "database ","RElational database" , "software", 2  ) ;
-       addDatabaseQuestions (question1);
+        Question question1 = new Question( "WHAT IS SQL ?"  , "language", "database ","RElational database" , "software", 2  ) ;
+        Question question2 = new Question( "WHAT IS MySQL ?"  , "language", "database ","RElational database" , "software", 2  ) ;
+        Question question3 = new Question( "WHAT IS NoSQL ?"  , "language", "database ","RElational database" , "software", 2  ) ;
+        Question question4 = new Question( "WHAT IS SQLite ?"  , "language", "database ","RElational database" , "software", 2  ) ;
+        addDatabaseQuestions (question1);
+        addDatabaseQuestions (question2);
+        addDatabaseQuestions (question3);
+        addDatabaseQuestions (question4);
     }
     private void addDatabaseQuestions(Question question)
     {
@@ -59,23 +66,25 @@ public class Quizdbhelper<Private> extends SQLiteOpenHelper {
         db.insert(Questiontable.TABLE_NAME,null,contentValues);
     }
     public List<Question>  getDatabaseQuestions(){
-        List<Question> questions= new ArrayList<>();
-        db=getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + Questiontable.TABLE_NAME, null );
-        if(cursor.moveToFirst()){
-            do{
-                Question question= new Question();
-                question.setQuestion(cursor.getString(cursor.getColumnIndex(Questiontable.Question_Col)));
-                question.setOption1(cursor.getString(cursor.getColumnIndex(Questiontable.OPTION_1)));
-                question.setOption2(cursor.getString(cursor.getColumnIndex(Questiontable.OPTION_2)));
-                question.setOption3(cursor.getString(cursor.getColumnIndex(Questiontable.OPTION_3)));
-                question.setOption4(cursor.getString(cursor.getColumnIndex(Questiontable.OPTION_4)));
-                question.setCorrect(cursor.getInt(cursor.getColumnIndex(Questiontable.CORRECT)));
-                questions.add(question);
-            }while(cursor.moveToNext());
+        List<Question> questionList = new ArrayList<>();
+        db = getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM " + Questiontable.TABLE_NAME, null);
+
+        if (c.moveToFirst()) {
+            do {
+                Question question = new Question();
+                question.setQuestion(c.getString(1));
+                question.setOption1(c.getString(2));
+                question.setOption2(c.getString(3));
+                question.setOption3(c.getString(4));
+                question.setOption4(c.getString(5));
+                question.setCorrect(c.getInt(6));
+                questionList.add(question);
+            } while (c.moveToNext());
         }
-        cursor.close();
-        return questions;
+
+        c.close();
+        return questionList;
     }
 
 }
