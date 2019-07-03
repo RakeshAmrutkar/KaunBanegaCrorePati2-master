@@ -57,8 +57,9 @@ public class Quiz_Activity extends AppCompatActivity {
     private  void loadHighsocre()
     {    SharedPreferences prefs = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
          highscore = prefs.getInt(KEY_HIGHSCORE,0);
+        textViewHighScore.setText("High score: " + highscore);
     }
-    private  void  updateHighSCore(int highscoreNew)
+    private  void updateHighSCore(int highscoreNew)
     {
         highscore=highscoreNew;
         textViewHighScore.setText("High score: " + highscore);

@@ -145,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
         Intent resultintent  = new Intent();
         resultintent.putExtra(EXTRA_SCORE,score);
         setResult(RESULT_OK,resultintent);
-
         finish();
     }
 }
