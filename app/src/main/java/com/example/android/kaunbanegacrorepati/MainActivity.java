@@ -1,5 +1,6 @@
 package com.example.android.kaunbanegacrorepati;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
+    public static final String EXTRA_SCORE = "extraScore";
     private TextView textViewQuestion;
     private TextView textViewScore;
     private TextView textViewQuestionCount;
@@ -57,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
         Quizdbhelper myQuiz = new Quizdbhelper(this);
         questionList= myQuiz.getDatabaseQuestions();
         textColorDefaultRb= rb1.getTextColors();
-
-        ;
         questionCounterTotal= questionList.size();
         Collections.shuffle(questionList);
         showNextQuestion();
@@ -140,10 +139,13 @@ public class MainActivity extends AppCompatActivity {
         } else {
             finishQuiz();
         }
-
     }
 
     private void finishQuiz() {
+        Intent resultintent  = new Intent();
+        resultintent.putExtra(EXTRA_SCORE,score);
+        setResult(RESULT_OK,resultintent);
+
         finish();
     }
 }
