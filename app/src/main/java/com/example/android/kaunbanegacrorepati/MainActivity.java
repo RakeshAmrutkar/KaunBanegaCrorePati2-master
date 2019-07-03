@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int score;
     private boolean answered;
-
+    private long backPressed;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -146,5 +146,16 @@ public class MainActivity extends AppCompatActivity {
         resultintent.putExtra(EXTRA_SCORE,score);
         setResult(RESULT_OK,resultintent);
         finish();
+    }
+    @Override
+    public void onBackPressed() {
+        if(backPressed+2000 >System.currentTimeMillis())
+        {
+            finishQuiz();
+        }
+        else{
+            Toast.makeText(this,"press back again to exit",Toast.LENGTH_SHORT);
+        }
+        backPressed = System.currentTimeMillis();
     }
 }

@@ -69,5 +69,5 @@ public class Quiz_Activity extends AppCompatActivity {
         editor.apply();
 
     }
-    
+
 }
