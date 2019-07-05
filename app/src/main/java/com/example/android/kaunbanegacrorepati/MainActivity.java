@@ -3,6 +3,7 @@ package com.example.android.kaunbanegacrorepati;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,9 +17,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_SCORE = "extraScore";
+    private static final long countdowninmillis = 30000;
     private TextView textViewQuestion;
     private TextView textViewScore;
     private TextView textViewQuestionCount;
@@ -32,6 +35,11 @@ public class MainActivity extends AppCompatActivity {
     List<Question> questionList= new ArrayList<Question>();
 
     private ColorStateList textColorDefaultRb;
+    private ColorStateList textColorDefaultcd;
+
+    private CountDownTimer countDownTimer;
+    private  long timeLeftInMillis;
+
     private int questionCounter;
     private int questionCounterTotal;
     private Question CurrentQuestion;
@@ -58,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         Quizdbhelper myQuiz = new Quizdbhelper(this);
         questionList= myQuiz.getDatabaseQuestions();
         textColorDefaultRb= rb1.getTextColors();
+        textColorDefaultcd =textViewCountDown.getTextColors();
+
         questionCounterTotal= questionList.size();
         Collections.shuffle(questionList);
         showNextQuestion();
@@ -80,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkAnswer() {
         answered = true;
+        countDownTimer.cancel();
         RadioButton rbchecked = findViewById(rbGroup.getCheckedRadioButtonId());
         int answerGiven = rbGroup.indexOfChild(rbchecked)+1;
         if(answerGiven==CurrentQuestion.getCorrect()){
@@ -136,11 +147,52 @@ public class MainActivity extends AppCompatActivity {
             textViewQuestionCount.setText("Question: " + questionCounter + "/" + questionCounterTotal);
             answered = false;
             buttonConfirmNext.setText("Confirm");
+            timeLeftInMillis=countdowninmillis;
+            startCountDown();
         } else {
             finishQuiz();
         }
     }
+   private void startCountDown()
+   {
+       countDownTimer=new CountDownTimer(timeLeftInMillis,1000) {
+           @Override
+           public void onTick(long millisUntilFinished) {
+               timeLeftInMillis=millisUntilFinished;
+               updateCountDownNext();
+           }
 
+           @Override
+           public void onFinish() {
+             timeLeftInMillis=0;
+             updateCountDownNext();
+             checkAnswer();
+           }
+       }.start();
+
+
+
+   }
+
+   private void updateCountDownNext(){
+         int min = (int) (timeLeftInMillis /1000) /60;
+         int second =(int) (timeLeftInMillis /1000) %60;
+          String timeformatted = String.format(Locale.getDefault(),"%02d:%02d",min,second );
+          textViewCountDown.setText(timeformatted);
+          if(timeLeftInMillis <10000)
+          {
+              textViewCountDown.setTextColor(Color.RED);
+
+
+
+          }
+          else{
+
+              textViewCountDown.setTextColor(textColorDefaultcd);
+          }
+
+
+   }
     private void finishQuiz() {
         Intent resultintent  = new Intent();
         resultintent.putExtra(EXTRA_SCORE,score);
@@ -157,5 +209,15 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this,"press back again to exit",Toast.LENGTH_SHORT);
         }
         backPressed = System.currentTimeMillis();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(countDownTimer!=null)
+        {
+            countDownTimer.cancel();
+
+        }
     }
 }
