@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(savedInstanceState==null){
             Quizdbhelper myQuiz = new Quizdbhelper(this);
-            questionList= myQuiz.getDatabaseQuestions();
+            questionList= myQuiz.getQuestions(Question.DIFFICULTY_MEDIUM);
             questionCounterTotal= questionList.size();
             Collections.shuffle(questionList);
             showNextQuestion();

@@ -13,6 +13,7 @@ public  final class Quizcontract {
         public static final String OPTION_3 =" op3";
         public static final String OPTION_4 =" op4";
         public static final String CORRECT =" correct";
+        public static final String DIFFICULTY_COL =" difficulty";
 
 
 
