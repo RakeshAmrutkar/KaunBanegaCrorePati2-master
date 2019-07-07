@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.CountDownTimer;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -22,6 +23,14 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_SCORE = "extraScore";
     private static final long countdowninmillis = 30000;
+
+    //Saving values when our activity is destroyed
+    private static final String KEY_SCORE ="keyScore";
+    private static final String KEY_QUESTION_COUNT= "keyQuestionCount";
+    private static final String KEY_COUNTDOWN= "keyCountDown";
+    private static final String KEY_ANSWERED="keyAnswered";
+    private static final String KEY_QUESTION_LIST= "keyQuestionList";
+
     private TextView textViewQuestion;
     private TextView textViewScore;
     private TextView textViewQuestionCount;
@@ -32,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private RadioButton rb3;
     private RadioButton rb4;
     private Button buttonConfirmNext;
-    List<Question> questionList= new ArrayList<Question>();
+    ArrayList<Question> questionList= new ArrayList<Question>();
 
     private ColorStateList textColorDefaultRb;
     private ColorStateList textColorDefaultcd;
@@ -62,15 +71,32 @@ public class MainActivity extends AppCompatActivity {
         rb3 = findViewById(R.id.radio_button_3);
         rb4 = findViewById(R.id.radio_button_4);
         buttonConfirmNext = findViewById(R.id.button_confirm);
-
-        Quizdbhelper myQuiz = new Quizdbhelper(this);
-        questionList= myQuiz.getDatabaseQuestions();
         textColorDefaultRb= rb1.getTextColors();
         textColorDefaultcd =textViewCountDown.getTextColors();
 
-        questionCounterTotal= questionList.size();
-        Collections.shuffle(questionList);
-        showNextQuestion();
+
+        if(savedInstanceState==null){
+            Quizdbhelper myQuiz = new Quizdbhelper(this);
+            questionList= myQuiz.getDatabaseQuestions();
+            questionCounterTotal= questionList.size();
+            Collections.shuffle(questionList);
+            showNextQuestion();
+        }else{
+            questionList=savedInstanceState.getParcelableArrayList(KEY_QUESTION_LIST);
+            questionCounterTotal=questionList.size();
+            questionCounter=savedInstanceState.getInt(KEY_QUESTION_COUNT);
+            CurrentQuestion=questionList.get(questionCounter-1);
+            score=savedInstanceState.getInt(KEY_SCORE);
+            answered=savedInstanceState.getBoolean(KEY_ANSWERED);
+            timeLeftInMillis=savedInstanceState.getLong(KEY_COUNTDOWN);
+
+            if(!answered){
+               startCountDown();
+            }else{
+                updateCountDownNext();
+                showSolution();
+            }
+        }
         buttonConfirmNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -219,5 +245,15 @@ public class MainActivity extends AppCompatActivity {
             countDownTimer.cancel();
 
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_SCORE,score);
+        outState.putInt(KEY_QUESTION_COUNT,questionCounter);
+        outState.putLong(KEY_COUNTDOWN,timeLeftInMillis);
+        outState.putBoolean(KEY_ANSWERED,answered);
+        outState.putParcelableArrayList(KEY_QUESTION_LIST,questionList);
     }
 }
